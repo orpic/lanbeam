@@ -22,6 +22,7 @@ import java.net.URLEncoder
 import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLServerSocket
 import javax.net.ssl.SSLSocket
@@ -31,7 +32,10 @@ private const val TAG = "LanBeam"
 private const val BUF = 1 shl 20 // 1 MiB I/O buffer
 private const val STREAM_BUF = 64 shl 10 // per-connection stream buffer
 private const val MAX_CONNS = 64 // all clients together
-private const val MAX_CONNS_PER_IP = 24 // one browser uses up to 18 (6 per port x 3)
+private const val MAX_CONNS_PER_IP = 24 // a paired browser uses up to 18 (6 per port x 3)
+private const val MAX_UNPAIRED_PER_IP = 6 // before pairing: page, pairing, port probes
+private const val MAX_UNPAIRED_TOTAL = 16 // all unpaired devices together; the rest stay free for paired ones
+private const val UPLOAD_IDLE_MS = 10 * 60_000L // an upload with no data for 10 min is abandoned
 private const val MAX_PENDING_UPLOADS = 64
 private const val MAX_HEADER = 32 * 1024
 private const val PORTS = 3
@@ -72,6 +76,9 @@ class LanServer(private val ctx: Context, private val lan: LanAddress, ssl: SSLC
     private val clientIp = ThreadLocal<String>()
     private val pool = Executors.newCachedThreadPool()
     private val conns = java.util.concurrent.atomic.AtomicInteger()
+    private val unpairedConns = java.util.concurrent.atomic.AtomicInteger()
+    /** Closes connections that are too slow to send their request (and runs upload cleanup). */
+    private val timer = Executors.newSingleThreadScheduledExecutor()
     private val connsByIp = ConcurrentHashMap<String, java.util.concurrent.atomic.AtomicInteger>()
     private val uploads = ConcurrentHashMap<String, Upload>()
     @Volatile private var running = true
@@ -81,6 +88,7 @@ class LanServer(private val ctx: Context, private val lan: LanAddress, ssl: SSLC
 
     private class Upload(val incoming: Incoming, val pfd: android.os.ParcelFileDescriptor, val channel: java.nio.channels.FileChannel) {
         var lastPublish = 0L
+        @Volatile var lastWrite = System.currentTimeMillis()
         /** Completed byte ranges [start, end), merged. Chunks may arrive in any order. */
         val ranges = java.util.TreeMap<Long, Long>()
         var finished = false
@@ -106,14 +114,24 @@ class LanServer(private val ctx: Context, private val lan: LanAddress, ssl: SSLC
                 if (!Net.sameSubnet(s.inetAddress, lan.address, lan.prefix)) {
                     Dbg.log("rejected off-subnet client"); runCatching { s.close() }; continue
                 }
-                // Limit connections so nobody on the network can exhaust memory before pairing.
+                // Limit connections so nobody on the network can crowd out the paired browser.
+                // Devices that haven't paired get a few connections each and share a small pool;
+                // the rest of the slots stay free for paired devices (which use up to 18 at once).
                 val ip = s.inetAddress.hostAddress ?: "?"
+                val paired = Hub.isPairedAddress(ip)
                 val perIp = connsByIp.computeIfAbsent(ip) { java.util.concurrent.atomic.AtomicInteger() }
                 val total = conns.incrementAndGet(); val mine = perIp.incrementAndGet()
-                if (total > MAX_CONNS || mine > MAX_CONNS_PER_IP) {
-                    conns.decrementAndGet(); perIp.decrementAndGet(); runCatching { s.close() }; continue
+                val strangers = if (paired) 0 else unpairedConns.incrementAndGet()
+                val over = total > MAX_CONNS || mine > (if (paired) MAX_CONNS_PER_IP else MAX_UNPAIRED_PER_IP) ||
+                    (!paired && strangers > MAX_UNPAIRED_TOTAL)
+                if (over) {
+                    conns.decrementAndGet(); perIp.decrementAndGet(); if (!paired) unpairedConns.decrementAndGet()
+                    runCatching { s.close() }; continue
                 }
-                pool.execute { try { serve(s as SSLSocket) } finally { conns.decrementAndGet(); perIp.decrementAndGet() } }
+                pool.execute {
+                    try { serve(s as SSLSocket) }
+                    finally { conns.decrementAndGet(); perIp.decrementAndGet(); if (!paired) unpairedConns.decrementAndGet() }
+                }
             }
         }
     }
@@ -122,8 +140,27 @@ class LanServer(private val ctx: Context, private val lan: LanAddress, ssl: SSLC
         running = false
         servers.forEach { runCatching { it.close() } }
         pool.shutdownNow()
-        uploads.values.forEach { runCatching { it.channel.close(); it.pfd.close() } }
+        timer.shutdownNow()
+        // Unfinished uploads: close and delete the half-written files.
+        uploads.values.forEach { abandon(it) }
         uploads.clear()
+    }
+
+    /** Deletes an upload that will never finish (sharing stopped, or idle for too long). */
+    private fun abandon(up: Upload) {
+        runCatching { up.channel.close(); up.pfd.close() }
+        runCatching { ctx.contentResolver.delete(up.incoming.uri, null, null) }
+        uploads.remove(up.incoming.id)
+        Hub.incoming.remove(up.incoming)
+        Hub.publish()
+    }
+
+    init {
+        // Every minute: drop uploads nobody has written to for 10 minutes.
+        timer.scheduleWithFixedDelay({
+            val now = System.currentTimeMillis()
+            uploads.values.filter { !it.finished && now - it.lastWrite > UPLOAD_IDLE_MS }.forEach { abandon(it) }
+        }, 1, 1, TimeUnit.MINUTES)
     }
 
     // ---------------------------------------------------------------- HTTP plumbing
@@ -137,17 +174,23 @@ class LanServer(private val ctx: Context, private val lan: LanAddress, ssl: SSLC
     private class HttpError(val code: Int, msg: String) : Exception(msg)
 
     private fun serve(sock: SSLSocket) {
+        // Hard deadlines, not just per-read timeouts: a client that trickles one byte at a time is cut off.
+        // The TLS handshake plus the first request's headers get 10 s; each later request's headers get 20 s.
+        var deadline = timer.schedule({ runCatching { sock.close() } }, 10, TimeUnit.SECONDS)
         try {
             sock.tcpNoDelay = true
-            sock.soTimeout = 10_000 // handshake and first request must arrive quickly
+            sock.soTimeout = 10_000
             sock.sendBufferSize = 4 shl 20
             sock.startHandshake()
-            sock.soTimeout = 30_000 // then: a stalled read for 30 s ends the connection
+            sock.soTimeout = 30_000 // a body read that stalls for 30 s ends the connection
             // Small stream buffers: large body reads and writes (1 MiB arrays, after pairing) bypass them anyway.
             val input = BufferedInputStream(sock.inputStream, STREAM_BUF)
             val out = BufferedOutputStream(sock.outputStream, STREAM_BUF)
+            var first = true
             while (running) {
-                val req = readRequest(input) ?: break
+                if (!first) deadline = timer.schedule({ runCatching { sock.close() } }, 20, TimeUnit.SECONDS)
+                first = false
+                val req = try { readRequest(input) } finally { deadline.cancel(false) } ?: break
                 cors.set(req.headers["origin"]?.takeIf { it in allowedOrigins })
                 clientIp.set(sock.inetAddress.hostAddress ?: "?")
                 Hub.peerRequest(
@@ -159,6 +202,11 @@ class LanServer(private val ctx: Context, private val lan: LanAddress, ssl: SSLC
                 try {
                     route(req, out)
                 } catch (e: HttpError) {
+                    if (!Hub.isPaired(req.cookie("lb"))) {
+                        // Not paired: answer and hang up. Never read (drain) a stranger's request body.
+                        json(out, e.code, JSONObject().put("error", e.message), mapOf("Connection" to "close"))
+                        out.flush(); break
+                    }
                     drain(req)
                     json(out, e.code, JSONObject().put("error", e.message))
                 }
@@ -166,11 +214,15 @@ class LanServer(private val ctx: Context, private val lan: LanAddress, ssl: SSLC
                 if (!keepAlive) break
             }
         } catch (_: SocketException) {
+        } catch (e: HttpError) {
+            // Malformed request line or headers: there is no request to answer properly. Just close.
+            Dbg.log("bad request: ${e.message}")
         } catch (e: IOException) {
             Dbg.log("conn closed: ${e.message}")
         } catch (e: Exception) {
-            Log.w(TAG, "serve", e)
+            Dbg.log("serve: $e") // no stack traces in release logs
         } finally {
+            deadline.cancel(false)
             runCatching { sock.close() }
         }
     }
@@ -201,9 +253,11 @@ class LanServer(private val ctx: Context, private val lan: LanAddress, ssl: SSLC
         if (headers["transfer-encoding"] != null) throw IOException("chunked bodies not supported")
         val target = parts[1]
         val path = target.substringBefore('?')
-        val query = target.substringAfter('?', "").split('&').filter { it.isNotEmpty() }.associate {
-            URLDecoder.decode(it.substringBefore('='), "UTF-8") to URLDecoder.decode(it.substringAfter('=', ""), "UTF-8")
-        }
+        val query = try {
+            target.substringAfter('?', "").split('&').filter { it.isNotEmpty() }.associate {
+                URLDecoder.decode(it.substringBefore('='), "UTF-8") to URLDecoder.decode(it.substringAfter('=', ""), "UTF-8")
+            }
+        } catch (_: IllegalArgumentException) { throw HttpError(400, "bad query") }
         val len = headers["content-length"]?.toLongOrNull() ?: 0L
         return Req(parts[0], path, query, headers, LimitedInput(input, len))
     }
@@ -365,8 +419,14 @@ class LanServer(private val ctx: Context, private val lan: LanAddress, ssl: SSLC
         req.headers["range"]?.let { r ->
             val m = Regex("bytes=(\\d*)-(\\d*)").matchEntire(r.trim()) ?: return@let
             val (a, b) = m.destructured
-            if (a.isEmpty()) { start = (size - b.toLong()).coerceAtLeast(0) } else {
-                start = a.toLong(); if (b.isNotEmpty()) end = minOf(b.toLong(), size - 1)
+            // toLongOrNull: "bytes=-" or absurdly long numbers are answered with 416, not an exception.
+            val av = a.toLongOrNull(); val bv = b.toLongOrNull()
+            if (a.isEmpty()) {
+                if (bv == null) { head(out, 416, "text/plain", 0, mapOf("Content-Range" to "bytes */$size")); return }
+                start = (size - bv).coerceAtLeast(0)
+            } else {
+                if (av == null || (b.isNotEmpty() && bv == null)) { head(out, 416, "text/plain", 0, mapOf("Content-Range" to "bytes */$size")); return }
+                start = av; if (bv != null) end = minOf(bv, size - 1)
             }
             if (start > end || start >= size) {
                 head(out, 416, "text/plain", 0, mapOf("Content-Range" to "bytes */$size")); return
@@ -397,9 +457,10 @@ class LanServer(private val ctx: Context, private val lan: LanAddress, ssl: SSLC
         val name = sanitize(body.optString("name"))
         val size = body.optLong("size", -1)
         if (size < 0) throw HttpError(400, "size required")
-        // Refuse what cannot fit (keep 200 MB free), and cap unfinished uploads.
+        // Refuse what cannot fit: count the space every unfinished upload still needs, and keep 200 MB free.
         val free = android.os.StatFs(android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS).path).availableBytes
-        if (size > free - (200L shl 20)) throw HttpError(507, "Not enough free space on the Android for this file.")
+        val reserved = uploads.values.sumOf { (it.incoming.size - it.incoming.received).coerceAtLeast(0) }
+        if (size > free - reserved - (200L shl 20)) throw HttpError(507, "Not enough free space on the Android for this file.")
         if (uploads.size >= MAX_PENDING_UPLOADS) throw HttpError(429, "Too many unfinished uploads. Wait for the current ones to finish.")
         val ext = name.substringAfterLast('.', "").lowercase()
         val mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext) ?: "application/octet-stream"
@@ -445,6 +506,7 @@ class LanServer(private val ctx: Context, private val lan: LanAddress, ssl: SSLC
             val n = req.body.read(buf); if (n <= 0) break
             val bb = ByteBuffer.wrap(buf, 0, n)
             while (bb.hasRemaining()) pos += up.channel.write(bb, pos) // positional write: safe in parallel
+            up.lastWrite = System.currentTimeMillis()
         }
         if (pos - offset != req.contentLength) throw IOException("short body")
         val received: Long

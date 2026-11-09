@@ -208,6 +208,9 @@ object Hub {
 
     fun hasPeers() = peers.isNotEmpty()
 
+    /** True if a device at this address has paired (it may then use all its parallel connections). */
+    fun isPairedAddress(ip: String) = peers[ip]?.stage == PeerStage.PAIRED
+
     fun peerList(): List<Peer> = peers.values.toList()
 
     /** Result of re-checking one known phone: still on our Wi-Fi or not. Two misses in a row remove it. */

@@ -91,6 +91,9 @@ class ServerService : Service() {
         server?.stop(); server = null
         hotspot?.stop(); hotspot = null
         runCatching { wifiLock?.release() }; runCatching { wakeLock?.release() }
+        // Files shared in this session are not offered to whoever pairs next time; let go of their read access too.
+        Hub.offers.forEach { o -> runCatching { contentResolver.releasePersistableUriPermission(o.uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION) } }
+        Hub.offers.clear()
         Hub.reset()
         super.onDestroy()
     }

@@ -53,6 +53,9 @@ Both devices on the same network: choose **Same Wi-Fi**, start sharing, scan the
 
 Under the page QR, the Android shows an address like `https://10.x.x.x:47201` and a **6-digit code**.
 Open the address on the laptop and enter the code. The code works once and expires after 10 minutes.
+After too many wrong codes from the network, code pairing pauses until you tap **Allow codes again** on the
+Android (the QR code keeps working). On a shared Wi-Fi this means someone nearby could pause it on purpose;
+use the QR code or Direct mode then.
 
 ### The "not private" warning
 
@@ -68,11 +71,14 @@ can't confirm *which* device it is talking to. That matters only on a Wi-Fi you 
 - **Direct mode** is safe by design: only devices that scanned QR 1 (the hotspot's random password) are on
   that network at all.
 - **On a shared Wi-Fi**, check it's really your Android: under the page QR, LanBeam shows
-  **Android's certificate** (tap it for the full fingerprint). In the browser's warning, open the certificate
-  details (*Show Details* → certificate in Safari, the warning text → certificate viewer in Chrome) and check
-  the **SHA-256** starts with the same digits. If it doesn't, stop and use Direct instead.
+  **Android's certificate (SHA-256)**, 16 pairs of characters (tap *Full* for all 32). In the browser's warning,
+  open the certificate details (*Show Details* → certificate in Safari, the warning text → certificate viewer in
+  Chrome) and compare the **SHA-256** fingerprint: **every pair shown must match**, not just the first few.
+  If anything differs, stop and use Direct instead.
+- On any network you don't trust, prefer **Direct**.
 
-Each Android creates its own certificate on first use; it never leaves the phone.
+Each Android creates its own certificate on first use; it never leaves the phone and is excluded from
+backups and phone-to-phone transfers.
 
 ### Tips
 
@@ -125,11 +131,12 @@ LANBEAM_KEY_PASSWORD=...
 ## Privacy
 
 LanBeam has no analytics, no ads, no accounts and no internet access of its own. Files, names and codes stay on
-the two devices involved. The Android forgets all pairings when sharing stops.
+the two devices involved. When sharing stops, the Android forgets all pairings and stops offering the files you
+shared; unfinished uploads are deleted. The web page keeps nothing after its tab is closed.
 
 ## Status
 
-Early but working (v0.1.1). Tested with an Android 16 phone and an iPhone on iOS 27.
+Early but working (v0.1.2). Tested with an Android 16 phone and an iPhone on iOS 27.
 Issues and suggestions are welcome.
 
 ## Verify the download

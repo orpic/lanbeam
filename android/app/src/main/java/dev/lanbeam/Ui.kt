@@ -328,7 +328,10 @@ private fun SharingScreen(st: UiState, pickFiles: () -> Unit) {
                 SectionLabel("Shared from this phone")
                 st.offers.forEach { o ->
                     FileRow(o.name, "${size(o.size)} · ${kind(o.name)}", kind(o.name), progress = null, done = false) {
-                        QuietButton("Remove", small = true) { Hub.offers.removeIf { it.id == o.id }; Hub.publish() }
+                        QuietButton("Remove", small = true) {
+                            runCatching { ctx.contentResolver.releasePersistableUriPermission(o.uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+                            Hub.offers.removeIf { it.id == o.id }; Hub.publish()
+                        }
                     }
                 }
             }
@@ -751,23 +754,27 @@ private fun CodeCard(st: UiState) {
 @Composable
 private fun CertNote(st: UiState) {
     val fp = st.certFp?.takeIf { it.isNotBlank() } ?: return
+    val bytes = fp.split(" ")
     var open by rememberSaveable { mutableStateOf(false) }
     Column(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable(role = Role.Button) { open = !open }.padding(horizontal = 4.dp, vertical = 6.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Lb.surface)
+            .clickable(role = Role.Button, onClickLabel = "Show the full fingerprint") { open = !open }.padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Glyph("lock", Lb.muted, 14)
-            Text("Android's certificate  ", color = Lb.muted, fontSize = 12.sp)
-            Text(fp.split(" ").take(6).joinToString(" ") + " …", color = Lb.text2, fontSize = 12.sp, fontFamily = Mono)
+            Text("Android's certificate (SHA-256)", color = Lb.muted, fontSize = 12.sp, modifier = Modifier.weight(1f))
+            Text(if (open) "Less" else "Full", color = Lb.link, fontSize = 12.sp)
         }
-        if (open) {
-            Text(fp, color = Lb.text2, fontSize = 12.sp, fontFamily = Mono, lineHeight = 17.sp)
-            Text(
-                "On a shared Wi-Fi, check this matches the SHA-256 in the browser's warning (Show Details / certificate). " +
-                    "If it doesn't, don't continue: use Direct instead.",
-                color = Lb.muted, fontSize = 12.sp, lineHeight = 17.sp,
-            )
+        // At least 16 of the 32 bytes, always visible, grouped like Safari and Chrome show it.
+        val shown = if (open) bytes else bytes.take(16)
+        shown.chunked(8).forEach { row ->
+            Text(row.joinToString(" "), color = Lb.text, fontSize = 13.sp, fontFamily = Mono, letterSpacing = 0.5.sp)
         }
+        Text(
+            "On a shared Wi-Fi, compare these with the SHA-256 in the browser's warning (certificate details). " +
+                "All of them must match. If they don't, stop and use Direct.",
+            color = Lb.muted, fontSize = 12.sp, lineHeight = 17.sp,
+        )
     }
 }

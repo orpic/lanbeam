@@ -812,12 +812,12 @@ $("logout").onclick = async () => {
 // What the page last knew, so a reload while disconnected still shows who and how to reconnect.
 const SNAP = "lanbeam.snap";
 function saveSnap() {
-  // The hotspot password is kept only for this tab (sessionStorage): it survives a reload, not closing the tab.
-  try { localStorage.setItem(SNAP, JSON.stringify({ devName, netName, curNet, t: Date.now() })); } catch (_) {}
+  // Kept only for this tab (sessionStorage): survives a reload, gone when the tab closes. Nothing stays behind.
+  try { sessionStorage.setItem(SNAP, JSON.stringify({ devName, netName, curNet, t: Date.now() })); localStorage.removeItem(SNAP); } catch (_) {}
   try { if (wifiPass) sessionStorage.setItem(SNAP + ".pass", wifiPass); } catch (_) {}
 }
 function loadSnap() {
-  try { const s = JSON.parse(localStorage.getItem(SNAP) || "null"); return s && Date.now() - s.t < 12 * 3600e3 ? s : null; } catch (_) { return null; }
+  try { const s = JSON.parse(sessionStorage.getItem(SNAP) || "null"); return s && Date.now() - s.t < 12 * 3600e3 ? s : null; } catch (_) { return null; }
 }
 /** Opened (or reloaded) without reaching the Android: show the last known state and how to reconnect. */
 function startOffline() {
