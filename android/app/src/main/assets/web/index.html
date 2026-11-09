@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0A0B10">
+<title>LanBeam</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 108 108'><defs><linearGradient id='lbg' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%234F7DFF'/><stop offset='1' stop-color='%236A4DF5'/></linearGradient></defs><rect width='108' height='108' rx='30' fill='url(%23lbg)'/><g fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round'><path d='M40 40H80M68 28L80 40L68 52M68 68H28M40 56L28 68L40 80' stroke-width='7'/><path d='M22 40H30M78 68H86' stroke-width='6' opacity='.65'/></g></svg>">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<meta name="apple-mobile-web-app-title" content="LanBeam">
+<style>
+  :root { --ink:#0A0B10; --surface:#14161F; --surface-2:#1C1F2B; --line:#262A38; --text:#F5F7FF; --text-2:#B4B9CB; --muted:#8A90A6;
+    --beam:#5B8CFF; --violet:#A66BFF; --pink:#FF6B9A; --amber:#FFB547; --ok:#3DDC97; --link:#8FB0FF;
+    --ease:cubic-bezier(.32,.72,0,1); color-scheme:dark; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html { background:var(--ink); }
+  body { margin:0; min-height:100vh; min-height:100dvh; background:var(--ink); color:var(--text);
+    font:15px/1.35 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; -webkit-font-smoothing:antialiased;
+    -webkit-text-size-adjust:100%; font-variant-numeric:tabular-nums; padding-bottom:calc(env(safe-area-inset-bottom) + 24px); }
+  body.hasbar { padding-bottom:calc(env(safe-area-inset-bottom) + 136px); }
+  [hidden] { display:none !important; }
+  button { font:inherit; color:inherit; background:none; border:0; padding:0; margin:0; cursor:pointer; -webkit-appearance:none; appearance:none; }
+  button:disabled { opacity:.45; cursor:default; }
+  a { color:var(--link); }
+  :focus { outline:none; } :focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  .press { transition:transform .2s var(--ease); }
+  .press:active:not(:disabled) { transform:scale(.97); }
+  .vh { position:absolute; width:1px; height:1px; opacity:0; overflow:hidden; clip:rect(0 0 0 0); }
+  .glass { background:rgba(20,22,31,.72); -webkit-backdrop-filter:blur(20px) saturate(180%); backdrop-filter:blur(20px) saturate(180%); }
+  @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))) { .glass { background:rgba(20,22,31,.97); } }
+  @media (prefers-reduced-transparency: reduce) { .glass, .pill, .menu, .toast { background:#1C1F2B !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; } }
+
+  /* top bar */
+  .top { position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:10px;
+    padding:calc(env(safe-area-inset-top) + 10px) 8px 10px 16px; border-bottom:.5px solid rgba(255,255,255,.08); }
+  .logo { width:34px; height:34px; flex:none; line-height:0; }
+  .tile { width:34px; height:34px; border-radius:10px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; flex:none; }
+  .who { flex:1; min-width:0; }
+  .who b { display:block; font-size:17px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .who > span { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); white-space:nowrap; }
+  .dot { width:7px; height:7px; border-radius:50%; background:var(--ok); flex:none; }
+  .dot.off { background:var(--amber); }
+  .ib { width:44px; height:44px; border-radius:22px; display:flex; align-items:center; justify-content:center; flex:none; }
+
+  /* content */
+  main { padding:20px 16px 0; display:flex; flex-direction:column; gap:24px; max-width:640px; margin:0 auto; }
+  .grp { display:flex; flex-direction:column; gap:8px; }
+  .hd { margin:0; padding:0 4px; font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card { background:var(--surface); border-radius:22px; overflow:hidden; }
+  .list > * + * { border-top:.5px solid var(--line); }
+  .row { display:flex; align-items:center; gap:12px; padding:10px 16px; min-height:64px; }
+  .th { position:relative; width:44px; height:44px; border-radius:10px; background:var(--surface-2); color:var(--text-2);
+    display:flex; align-items:center; justify-content:center; flex:none; overflow:hidden; }
+  .th img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .k-video { background:linear-gradient(135deg,#2B3550,#3A2A4F); }
+  .k-image { background:linear-gradient(135deg,#283A33,#2B2F45); }
+  .k-audio { background:linear-gradient(135deg,#3B2F27,#26343A); }
+  .mid { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .nmrow { display:flex; align-items:baseline; gap:8px; }
+  .nm { flex:1; display:flex; min-width:0; font-size:15px; white-space:nowrap; }
+  .nm .h { overflow:hidden; text-overflow:ellipsis; min-width:0; }
+  .nm .t { flex:none; }
+  .meta, .pct { font-size:13px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pct { flex:none; color:var(--text-2); }
+  .l2 { height:18px; display:flex; align-items:center; min-width:0; }
+  .l2.err { height:auto; }
+  .l2.err .meta { white-space:normal; color:var(--pink); line-height:18px; }
+  .st { width:22px; flex:none; display:flex; justify-content:center; }
+  .save { display:flex; align-items:center; height:44px; text-decoration:none; flex:none; }
+  .save span { height:34px; line-height:34px; padding:0 16px; border-radius:999px; background:var(--text); color:var(--ink); font-size:14px; font-weight:600; }
+  .empty { display:flex; align-items:center; gap:14px; padding:16px; }
+  .empty b { display:block; font-size:15px; font-weight:500; }
+
+  /* send card */
+  .seg { display:flex; padding:4px; margin:12px 12px 4px; border-radius:12px; background:#0E1017; }
+  .seg button { flex:1 1 0; height:36px; border-radius:9px; font-size:14px; font-weight:500; color:var(--muted); white-space:nowrap; }
+  .seg button[aria-pressed="true"] { background:var(--line); color:var(--text); font-weight:600; }
+  .hint { padding:4px 16px 12px; font-size:13px; line-height:18px; color:var(--muted); }
+  .hint b { color:var(--text); font-weight:600; }
+  .drop { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; margin:12px; height:132px; cursor:pointer;
+    border:1.5px dashed #444A60; border-radius:16px; color:var(--text); font-size:16px; font-weight:600; }
+  .drop i { width:44px; height:44px; border-radius:22px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; }
+  #seg:not([hidden]) ~ .drop { margin-top:0; }
+  #seg:not([hidden]) ~ #basket:not(:empty) { border-top:.5px solid var(--line); }
+  .x { width:44px; height:44px; display:flex; align-items:center; justify-content:center; flex:none; margin-right:-10px; color:var(--muted); }
+  .add { display:flex; align-items:center; gap:10px; height:52px; padding:0 16px; border-top:.5px solid var(--line); color:var(--link); font-size:15px; font-weight:500; cursor:pointer; }
+
+  /* sending hero */
+  .hero { position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; padding:36px 16px 28px; margin:-20px -16px 0;
+    background:radial-gradient(110% 80% at 50% 100%, rgba(91,140,255,.18), rgba(166,107,255,.07) 45%, rgba(10,11,16,0) 75%); }
+  .hero::before { content:""; position:absolute; left:50%; top:0; bottom:0; width:2px; margin-left:-1px;
+    background:linear-gradient(0deg, rgba(245,247,255,.85), rgba(91,140,255,.55) 45%, rgba(166,107,255,0)); }
+  .hero > * { position:relative; background:var(--ink); border-radius:999px; padding:2px 10px; max-width:100%; text-align:center; }
+  .hl { font-size:14px; color:var(--text-2); }
+  #sline { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .big { display:flex; align-items:baseline; gap:6px; padding:0 14px !important; border-radius:16px !important; }
+  .big b { font-size:60px; font-weight:700; letter-spacing:-.03em; line-height:1.1; }
+  .big span { font-size:19px; font-weight:600; color:var(--text-2); }
+  .pb { flex:1; height:4px; border-radius:4px; background:var(--line); overflow:hidden; }
+  .pb i { display:block; height:100%; background:linear-gradient(90deg,#5B8CFF,#A66BFF); transform-origin:0 50%; transform:scaleX(0); transition:transform .25s linear; }
+  .pb.total { flex:none; }
+  .pb.total i { background:linear-gradient(90deg,#5B8CFF,#A66BFF 60%,#FF6B9A); }
+  .note { font-size:13px; line-height:18px; color:var(--muted); padding:4px 4px 0; }
+
+  /* done */
+  .done { display:flex; flex-direction:column; align-items:center; gap:12px; padding:20px 8px 8px; text-align:center; }
+  .badge { position:relative; width:96px; height:96px; display:flex; align-items:center; justify-content:center; }
+  .badge::before { content:""; position:absolute; inset:0; border-radius:50%;
+    background:radial-gradient(circle, rgba(61,220,151,.28), rgba(91,140,255,.10) 60%, rgba(10,11,16,0) 72%); }
+  .badge i { position:relative; width:64px; height:64px; border-radius:50%; background:var(--ok); display:flex; align-items:center; justify-content:center; }
+  .badge.bad::before { background:radial-gradient(circle, rgba(255,181,71,.25), rgba(10,11,16,0) 70%); }
+  .badge.bad i { background:var(--amber); }
+  .done h1 { margin:0; font-size:28px; font-weight:700; line-height:1.2; }
+  .dsub { font-size:17px; color:var(--text-2); }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+  .chip { font-size:13px; font-weight:600; color:var(--text-2); background:var(--surface); padding:7px 12px; border-radius:999px; }
+  .acts { display:flex; flex-direction:column; gap:10px; width:100%; margin-top:8px; }
+  .cap { display:block; width:100%; height:54px; border-radius:999px; background:var(--text); color:var(--ink); font-size:17px; font-weight:600; text-align:center; }
+  .cap2 { background:var(--surface-2); color:var(--text); }
+  .stop { height:50px; font-size:16px; background:var(--surface-2); color:#FF8A80; }
+
+  /* bottom bar */
+  .bar { position:fixed; left:0; right:0; bottom:0; z-index:30; padding:12px 16px calc(env(safe-area-inset-bottom) + 12px);
+    border-top:.5px solid rgba(255,255,255,.08); transition:transform .35s var(--ease), opacity .35s var(--ease); }
+  .bar > div { display:flex; flex-direction:column; gap:10px; max-width:608px; margin:0 auto; }
+  .bar.off { transform:translateY(110%); opacity:0; pointer-events:none; visibility:hidden;
+    transition:transform .35s var(--ease), opacity .35s var(--ease), visibility 0s .35s; }
+  .sum { font-size:13px; color:var(--muted); padding:0 4px; }
+
+  /* status pill: fixed overlay, takes no layout space */
+  .pill { position:fixed; z-index:100; top:calc(env(safe-area-inset-top) + 8px); left:50%; width:max-content; max-width:calc(100vw - 32px);
+    transform:translate(-50%,0); border-radius:18px; background:rgba(40,33,22,.92); overflow:hidden;
+    box-shadow:0 0 0 .5px rgba(255,181,71,.45), 0 10px 30px rgba(0,0,0,.5);
+    -webkit-backdrop-filter:blur(20px) saturate(180%); backdrop-filter:blur(20px) saturate(180%);
+    transition:transform .35s var(--ease), opacity .35s var(--ease); }
+  .pill.off { opacity:0; transform:translate(-50%,-12px) scale(.96); pointer-events:none; visibility:hidden;
+    transition:transform .35s var(--ease), opacity .35s var(--ease), visibility 0s .35s; }
+  .pill:not(.ok) { background:rgba(36,30,21,.98); }
+  .pill.ok { background:rgba(16,40,30,.92); box-shadow:0 0 0 .5px rgba(61,220,151,.45), 0 10px 30px rgba(0,0,0,.5); }
+  .pill.open { border-radius:22px; width:360px; }
+  .pill > button { display:flex; align-items:center; gap:8px; height:36px; padding:0 14px 0 12px; max-width:100%;
+    white-space:nowrap; font-size:14px; font-weight:600; color:#FFD9A0; }
+  .pill.ok > button { color:#B8F5D8; cursor:default; }
+  .pill > button span { overflow:hidden; text-overflow:ellipsis; }
+  .pill svg { flex:none; display:block; }
+  .pillcard { padding:0 16px 14px; font-size:14px; line-height:20px; color:#F3E7D5; }
+  .pillcard p { margin:0 0 8px; } .pillcard p:last-child { margin:0; font-size:13px; color:var(--text-2); }
+  .pcrow { display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .pcrow code { font:600 15px ui-monospace, "SF Mono", Menlo, monospace; color:var(--text); background:rgba(255,255,255,.08); padding:4px 8px; border-radius:8px; user-select:all; -webkit-user-select:all; }
+  .pcbtn { min-height:36px; padding:0 14px; border:0; border-radius:999px; background:var(--text); color:var(--ink); font:600 14px/1 inherit; font-family:inherit; cursor:pointer; }
+  .pctip { display:block; margin-top:10px; font-size:13px; color:var(--text-2); }
+  .spin { animation:spin 1s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* menu + toast */
+  .scrim { position:fixed; inset:0; z-index:80; }
+  .menu { position:fixed; z-index:90; top:calc(env(safe-area-inset-top) + 54px); right:12px; width:260px; border-radius:16px; overflow:hidden;
+    background:rgba(28,31,43,.94); -webkit-backdrop-filter:blur(20px) saturate(180%); backdrop-filter:blur(20px) saturate(180%);
+    box-shadow:0 0 0 .5px rgba(255,255,255,.1), 0 16px 40px rgba(0,0,0,.55); transform-origin:top right;
+    transition:transform .35s var(--ease), opacity .35s var(--ease); }
+  .menu.off { opacity:0; transform:scale(.9); pointer-events:none; visibility:hidden;
+    transition:transform .35s var(--ease), opacity .35s var(--ease), visibility 0s .35s; }
+  .menu button { display:flex; align-items:center; gap:12px; width:100%; min-height:52px; padding:8px 16px; text-align:left; font-size:16px; }
+  .menu button + button { border-top:.5px solid var(--line); }
+  .menu small { display:block; font-size:12px; color:var(--muted); }
+  .menu .danger { color:var(--pink); }
+  .toast { position:fixed; z-index:95; left:50%; bottom:calc(env(safe-area-inset-bottom) + 20px); width:min(420px, calc(100vw - 32px));
+    transform:translate(-50%,0); padding:12px 16px; border-radius:16px; font-size:14px; line-height:20px; color:var(--text);
+    background:rgba(28,31,43,.94); -webkit-backdrop-filter:blur(20px) saturate(180%); backdrop-filter:blur(20px) saturate(180%);
+    box-shadow:0 0 0 .5px rgba(255,255,255,.1), 0 10px 30px rgba(0,0,0,.5); transition:transform .35s var(--ease), opacity .35s var(--ease); }
+  .toast .m { color:var(--text-2); font-size:13px; }
+  body.hasbar .toast { bottom:calc(env(safe-area-inset-bottom) + 136px); }
+  .toast.off { opacity:0; transform:translate(-50%,12px); pointer-events:none; visibility:hidden;
+    transition:transform .35s var(--ease), opacity .35s var(--ease), visibility 0s .35s; }
+
+  /* unpaired */
+  .center { min-height:100vh; min-height:100dvh; display:flex; align-items:center; justify-content:center;
+    padding:calc(env(safe-area-inset-top) + 24px) 16px calc(env(safe-area-inset-bottom) + 24px); }
+  .uc { width:100%; max-width:360px; background:var(--surface); border-radius:22px; padding:28px 24px; text-align:center;
+    display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .uc .tile { width:56px; height:56px; border-radius:16px; }
+  .uc h1 { margin:6px 0 0; font-size:22px; font-weight:700; }
+  .uc p { margin:0; color:var(--text-2); font-size:15px; line-height:21px; }
+  .codeform { display:grid; gap:10px; margin-top:18px; padding-top:18px; border-top:0.5px solid var(--line); text-align:left; }
+  .codeform label { font-size:13px; color:var(--muted); }
+  .codeform input { height:54px; border:0; border-radius:14px; background:var(--surface-2); color:var(--text); font:600 26px/1 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing:.18em; text-align:center; font-variant-numeric:tabular-nums; outline:none; }
+  .codeform input:focus { box-shadow:0 0 0 2px var(--beam); }
+  .codeform button { height:50px; border:0; border-radius:999px; background:var(--text); color:var(--ink); font:600 16px/1 inherit; font-family:inherit; cursor:pointer; }
+  .codeform button:disabled { opacity:.5; }
+  .codemsg { min-height:18px; font-size:13px; color:#FF8A80; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .press:active:not(:disabled) { transform:none; }
+    .spin { animation:none; }
+    .pb i { transition:none; }
+    .pill.off { transform:translate(-50%,0); } .toast.off { transform:translate(-50%,0); } .menu.off, .bar.off { transform:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="pill" class="pill off" role="status" aria-live="polite">
+  <button id="pillbtn" type="button" aria-expanded="false" aria-controls="pillcard"><span id="pillico"></span><span id="pilltxt"></span></button>
+  <div id="pillcard" class="pillcard" hidden>
+    <p id="offwhy"></p>
+    <p>This page reconnects on its own. Transfers pause and continue where they stopped.</p>
+  </div>
+</div>
+
+<div id="unpaired" class="center" hidden>
+  <div class="uc">
+    <div class="tile"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B4B9CB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg></div>
+    <h1 id="unptitle">Not paired</h1>
+    <p id="unpmsg">Open LanBeam on the Android and scan its QR code with this phone's camera. Each QR code works once.</p>
+    <form id="codeform" class="codeform" autocomplete="off">
+      <label for="code">No camera? Enter the 6-digit code shown on the Android</label>
+      <input id="code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="000 000" aria-describedby="codemsg">
+      <button type="submit" id="codebtn">Pair</button>
+      <div id="codemsg" class="codemsg" role="alert"></div>
+    </form>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header class="top glass">
+    <div class="logo"><svg width="34" height="34" viewBox="0 0 108 108" role="img" aria-label="LanBeam"><defs><linearGradient id="lbg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4F7DFF"/><stop offset="1" stop-color="#6A4DF5"/></linearGradient></defs><rect width="108" height="108" rx="30" fill="url(#lbg2)"/><g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"><path d="M40 40H80M68 28L80 40L68 52M68 68H28M40 56L28 68L40 80" stroke-width="7"/><path d="M22 40H30M78 68H86" stroke-width="6" opacity=".65"/></g></svg></div>
+    <div class="who"><b id="dev">Android</b><span><i id="dot" class="dot"></i><span id="net">Connected · Same Wi-Fi</span></span></div>
+    <button id="more" class="ib press" type="button" aria-label="More" aria-haspopup="menu" aria-expanded="false" aria-controls="menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#B4B9CB" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <section id="xfer" class="grp" hidden>
+      <div id="hero" class="hero">
+        <div class="hl">Sending to <span class="devname">Android</span></div>
+        <div class="big"><b id="spd">0.0</b><span>MB/s</span></div>
+        <div class="hl" id="sline">Starting…</div>
+      </div>
+      <div id="done" class="done" hidden>
+        <div id="badge" class="badge"><i id="badgeico"></i></div>
+        <h1 id="dtitle"></h1>
+        <div id="dsub" class="dsub"></div>
+        <div id="chips" class="chips"></div>
+        <div class="acts">
+          <button id="retry" class="cap press" type="button" hidden>Retry failed</button>
+          <button id="again" class="cap press" type="button">Send more</button>
+        </div>
+      </div>
+      <div id="sendlist" class="card list"></div>
+      <div id="keepopen" class="note">Keep this page open until it's done. Safari pauses pages in the background.</div>
+    </section>
+
+    <section class="grp">
+      <h2 class="hd">From <span class="devname">Android</span></h2>
+      <div id="offers" class="card list"></div>
+    </section>
+
+    <section id="sendsec" class="grp">
+      <h2 class="hd">Send to <span class="devname">Android</span></h2>
+      <div class="card">
+        <div id="seg" class="seg" role="group" aria-label="Where to pick from" hidden>
+          <button type="button" data-src="files" aria-pressed="true">Files · original</button>
+          <button type="button" data-src="photos" aria-pressed="false">Photos · converted</button>
+        </div>
+        <div id="hint" class="hint" hidden></div>
+        <input id="pick" class="vh" type="file" multiple tabindex="-1" aria-hidden="true">
+        <label id="choose" for="pick" class="drop press" role="button" tabindex="0">
+          <i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F5F7FF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></i>
+          Choose files to send
+        </label>
+        <div id="basket" class="list"></div>
+        <label id="addmore" for="pick" class="add" role="button" tabindex="0" hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8FB0FF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Add more
+        </label>
+      </div>
+    </section>
+  </main>
+
+  <div id="bar" class="bar glass off">
+    <div id="idle">
+      <div id="sum" class="sum"></div>
+      <button id="send" class="cap press" type="button">Send</button>
+    </div>
+    <div id="busy" hidden>
+      <div class="pb total" aria-hidden="true"><i id="tbar"></i></div>
+      <button id="cancel" class="cap stop press" type="button">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="scrim" class="scrim" hidden></div>
+<div id="menu" class="menu off" role="menu" aria-label="More">
+  <button id="speed" type="button" role="menuitem">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B9CB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 17a8 8 0 1 1 15 0"/><path d="M12 13l3.5-4"/></svg>
+    <span>Speed test<small id="lanes"></small></span>
+  </button>
+  <button id="logout" type="button" role="menuitem" class="danger">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H14"/><path d="M10 16l-4-4 4-4M6 12h10"/></svg>
+    <span>Unpair this browser</span>
+  </button>
+</div>
+<div id="toast" class="toast off" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const CHUNK = 16 * 1024 * 1024;   // bytes per request
+const PER_ORIGIN = 6;             // WebKit's connection cap per host:port
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => { const u = ["B","KB","MB","GB","TB"]; let i = 0; while (n >= 1000 && i < u.length - 1) { n /= 1000; i++; } return (i ? n.toFixed(1) : n) + " " + u[i]; };
+const rate = (bytes, ms) => (bytes / 1e6 / (ms / 1000)).toFixed(1) + " MB/s";
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+let origins = [location.origin];  // every port that answered; filled in by probePorts()
+const debugLanes = +new URLSearchParams(location.search).get("lanes") || 0;
+// iPhone/iPad (iPadOS reports itself as a Mac with touch).
+const IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+
+/* ---------- icons and file kinds ---------- */
+const svg = (body, size, attrs) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" ${attrs} aria-hidden="true">${body}</svg>`;
+const STROKE = 'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+const DOC = svg('<path d="M6 2.5h8l4 4v15H6z"/><path d="M14 2.5v4h4"/>', 18, STROKE);
+const GLYPH = {
+  video: svg('<path d="M8 6.5v11l9-5.5z"/>', 16, 'fill="#F5F7FF"'),
+  image: svg('<rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5"/>', 18, STROKE),
+  audio: svg('<path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/>', 18, STROKE),
+  doc: DOC, file: DOC,
+};
+const KIND_LABEL = { video: "video", image: "image", audio: "audio", doc: "document", file: "file" };
+const CHECK = (size, color, w) => svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>', size, `fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"`);
+const SPIN = svg('<path d="M12 3a9 9 0 1 0 9 9"/>', 14, 'class="spin" fill="none" stroke="#FFB547" stroke-width="2.4" stroke-linecap="round"');
+const FOLDER = svg('<path d="M4 7.5h6l2 2h8v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/>', 28, 'fill="none" stroke="#5E6478" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none"');
+const XICON = svg('<path d="M6 6l12 12M18 6L6 18"/>', 16, 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"');
+
+const ext = (name) => (/\.([A-Za-z0-9]{1,8})$/.exec(name) || [, ""])[1];
+function kindOf(name, type) {
+  const e = ext(name).toLowerCase(); type = type || "";
+  if (/^video\//.test(type) || /^(mov|mp4|m4v|mkv|webm|avi|3gp|hevc|mts)$/.test(e)) return "video";
+  if (/^image\//.test(type) || /^(jpe?g|png|heic|heif|gif|webp|bmp|dng|tiff?|avif)$/.test(e)) return "image";
+  if (/^audio\//.test(type) || /^(mp3|m4a|aac|wav|flac|ogg|opus|amr)$/.test(e)) return "audio";
+  if (/^(pdf|docx?|xlsx?|pptx?|txt|md|csv|rtf|odt|pages|key|numbers|epub)$/.test(e)) return "doc";
+  return "file";
+}
+const thumb = (k, url) => `<div class="th k-${k}">${GLYPH[k]}${url ? `<img src="${url}" alt="" decoding="async" onerror="this.remove()">` : ""}</div>`;
+/** Middle truncation: long names keep their ending visible ("IMG_2026…_0081.MOV"). */
+function nameHTML(n) {
+  if (n.length <= 20) return `<div class="nm"><span class="h">${esc(n)}</span></div>`;
+  const tl = Math.min(n.length - 1, Math.max(6, ext(n).length + 4));
+  return `<div class="nm"><span class="h">${esc(n.slice(0, -tl))}</span><span class="t">${esc(n.slice(-tl))}</span></div>`;
+}
+
+async function api(path, opts = {}, origin = location.origin, timeoutMs = 0) {
+  const c = new AbortController(); const t = timeoutMs ? setTimeout(() => c.abort(), timeoutMs) : 0;
+  const outer = opts.signal, stop = () => c.abort(); // outer: the Cancel button of a running send
+  if (outer) { if (outer.aborted) c.abort(); else outer.addEventListener("abort", stop); }
+  let r;
+  try { r = await fetch(origin + path, { credentials: "include", ...opts, signal: c.signal }); }
+  catch (e) {
+    if (outer && outer.aborted) throw Object.assign(new Error("cancelled"), { cancel: true });
+    const err = new Error("unreachable"); err.net = true; throw err; // no answer at all: wrong Wi-Fi, out of range, app stopped
+  }
+  finally { clearTimeout(t); if (outer) outer.removeEventListener("abort", stop); }
+  if (r.status === 401) { showUnpaired(); throw new Error("not paired"); }
+  return r;
+}
+
+/* ---------- toast + menu ---------- */
+let toastTimer = 0, testing = false;
+function toast(html, ms) {
+  const t = $("toast"); clearTimeout(toastTimer);
+  t.innerHTML = html; t.classList.remove("off");
+  if (ms) toastTimer = setTimeout(() => t.classList.add("off"), ms);
+}
+$("toast").onclick = () => { if (!testing) $("toast").classList.add("off"); };
+function openMenu(v) {
+  $("menu").classList.toggle("off", !v); $("scrim").hidden = !v;
+  $("more").setAttribute("aria-expanded", String(v));
+}
+$("more").onclick = () => openMenu($("menu").classList.contains("off"));
+$("scrim").onclick = () => openMenu(false);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") openMenu(false); });
+
+/* ---------- reachability ---------- */
+/* The page polls every 2 s; after 5 s without an answer the status pill says so (an overlay: nothing on the page moves). */
+let onNet = null; // the running send refreshes its "paused" line through this
+let wifiPass = "";
+let online = true, lastOk = Date.now(), everOk = false, netName = "", devName = "the Android", curNet = null;
+/*
+ * Safari pauses the page while its download prompt or another app is in front. When the page wakes
+ * up, the clock has jumped and the first request may fail, which looked like "can't reach" for a
+ * moment. So: allow a grace period after waking or after tapping Save, and need two failures in a row.
+ */
+let graceUntil = 0, fails = 0;
+const grace = (ms) => { graceUntil = Math.max(graceUntil, Date.now() + ms); lastOk = Math.max(lastOk, Date.now() - 1000); };
+/*
+ * Coming back to the page (unlock, app switch): check the Android right away instead of waiting.
+ * An iPhone that was locked often moved to a saved Wi-Fi with internet meanwhile; say so at once.
+ * The grace period stays only for the Save tap (Safari's download prompt pauses the page briefly).
+ */
+let checking = false;
+async function quickCheck() {
+  if (checking || unpaired || $("app").hidden) return;
+  checking = true;
+  try {
+    for (let i = 0; i < 2; i++) {
+      try {
+        const r = await api("/api/ping", {}, location.origin, 2500);
+        if (r.ok) { graceUntil = 0; setOnline(true); return; }
+      } catch (e) { if (!e.net) return; }
+      await sleep(700);
+    }
+    graceUntil = 0; fails = 99; lastOk = 0; // two quick misses: not on the Android's Wi-Fi right now
+    setOnline(false);
+    openPillCard(true);
+  } finally { checking = false; }
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden) quickCheck(); });
+window.addEventListener("pageshow", (e) => { if (e.persisted) quickCheck(); });
+document.addEventListener("click", (e) => { if (e.target.closest && e.target.closest("a[download]")) grace(10000); }, true);
+
+// Shows the Android's own Wi-Fi by name (e.g. AndroidShare_9402), so it's easy to find again in Settings.
+const netLabel = () => "Connected · " + (curNet ? curNet : "Same Wi-Fi");
+let pillTimer = 0, wasOff = false;
+function pill(state) { // "off" | "warn" | "ok"
+  const p = $("pill");
+  clearTimeout(pillTimer);
+  p.classList.toggle("off", state === "off");
+  p.classList.toggle("ok", state === "ok");
+  if (state !== "warn") { p.classList.remove("open"); $("pillcard").hidden = true; $("pillbtn").setAttribute("aria-expanded", "false"); }
+  if (state === "warn") { $("pillico").innerHTML = SPIN; $("pilltxt").textContent = `Reconnecting to ${devName}…`; }
+  if (state === "ok") { $("pillico").innerHTML = CHECK(14, "#3DDC97", 2.6); $("pilltxt").textContent = "Connected"; pillTimer = setTimeout(() => pill("off"), 1500); }
+}
+function openPillCard(open) {
+  const p = $("pill"); if (p.classList.contains("ok") || p.classList.contains("off")) return;
+  p.classList.toggle("open", open); $("pillcard").hidden = !open; $("pillbtn").setAttribute("aria-expanded", String(open));
+}
+$("pillbtn").onclick = () => openPillCard(!$("pill").classList.contains("open")); // tap expands the pill into a card with what to check
+$("pillcard").addEventListener("click", async (e) => {
+  const b = e.target.closest && e.target.closest("button[data-act]"); if (!b) return;
+  if (b.dataset.act === "retry") { b.disabled = true; b.textContent = "Checking…"; await quickCheck(); b.disabled = false; b.textContent = "Try again"; }
+  if (b.dataset.act === "copy" && wifiPass) {
+    try { await navigator.clipboard.writeText(wifiPass); b.textContent = "Copied"; } catch (_) { b.textContent = "Copy failed"; }
+    setTimeout(() => { b.textContent = "Copy"; }, 1500);
+  }
+});
+function setOnline(ok) {
+  if (ok) { lastOk = Date.now(); everOk = true; fails = 0; }
+  else if (document.hidden || Date.now() < graceUntil || ++fails < 2) return;
+  online = ok || Date.now() - lastOk < 5000;
+  onNet?.();
+  $("dot").classList.toggle("off", !online);
+  $("net").textContent = online ? netLabel() : "Not reachable right now";
+  if (!online) {
+    if (!wasOff) pill("warn");
+    wasOff = true;
+    $("pilltxt").textContent = `Not connected to ${devName}`;
+    const retry = `<span class="pcrow"><button type="button" class="pcbtn" data-act="retry">Try again</button></span>`;
+    $("offwhy").innerHTML = !everOk
+      ? `Join ${netName ? `the Wi-Fi <b>${esc(netName)}</b>` : `the same Wi-Fi as ${esc(devName)}`} first (the Android's first QR code), then scan its second QR code.`
+      : netName
+        ? `<b>This phone left ${esc(devName)}'s Wi-Fi.</b> Open <b>Settings → Wi-Fi</b> and tap <b>${esc(netName)}</b>.` +
+          (wifiPass ? `<span class="pcrow">Password <code>${esc(wifiPass)}</code><button type="button" class="pcbtn" data-act="copy">Copy</button></span>` : "") +
+          `<span class="pctip">iPhones switch back to a Wi-Fi with internet when locked. To stop that while sharing: Settings → Wi-Fi → ⓘ next to your home Wi-Fi → turn off Auto-Join.</span>` +
+          `<span class="pctip">If sharing was restarted on the Android, its Wi-Fi changed: scan its first QR again.</span>` + retry
+        : `<b>Can't reach ${esc(devName)}.</b> Check that this phone is on the same Wi-Fi and that LanBeam is still sharing.` + retry;
+  } else if (wasOff) { wasOff = false; pill(unpaired ? "off" : "ok"); }
+}
+/** Resolves when the Android answers again; rejects with a clear message if it stays gone for maxMs. */
+async function waitOnline(maxMs = 180000, X = null) {
+  const t0 = Date.now();
+  while (!online || Date.now() - lastOk > 3000) {
+    if (X && X.cancelled) throw Object.assign(new Error("cancelled"), { cancel: true });
+    if (unpaired) throw new Error("sharing was restarted on the Android; scan its new QR code and send again");
+    if (Date.now() - t0 > maxMs) throw new Error("the Android was unreachable for 3 minutes");
+    await sleep(1000);
+  }
+}
+
+let unpaired = false;
+function showUnpaired() {
+  unpaired = true; wakeOff(); wasOff = false; pill("off"); openMenu(false);
+  $("app").hidden = true; $("unpaired").hidden = false; document.body.classList.remove("hasbar");
+}
+function showApp() {
+  if (!unpaired && !$("app").hidden) return;
+  unpaired = false; $("unpaired").hidden = true; $("app").hidden = false; updateBar();
+  wakeOn();
+}
+
+/** Pairing by typed code (laptops and other devices without a camera). Same one-time rules as the QR. */
+$("codeform").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const code = $("code").value.replace(/\D/g, "");
+  if (code.length !== 6) { $("codemsg").textContent = "Enter all 6 digits."; return; }
+  $("codebtn").disabled = true; $("codemsg").textContent = "";
+  try {
+    const r = await fetch("/api/pair", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code }) });
+    if (r.ok) { $("code").value = ""; await refresh(); }
+    else { const j = await r.json().catch(() => ({})); $("codemsg").textContent = j.error || "That code didn't work."; $("code").select(); }
+  } catch (_) { $("codemsg").textContent = "Can't reach the Android. Check this device is on its Wi-Fi."; }
+  $("codebtn").disabled = false;
+});
+$("code").addEventListener("input", () => { const d = $("code").value.replace(/\D/g, "").slice(0, 6); $("code").value = d.length > 3 ? d.slice(0, 3) + " " + d.slice(3) : d; });
+
+async function pairFromHash() {
+  const m = location.hash.match(/[#&]t=([A-Za-z0-9_-]+)/);
+  if (!m) return;
+  history.replaceState(null, "", location.pathname + location.search); // drop the token from the address bar
+  const r = await fetch("/api/pair", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: m[1] }) });
+  if (!r.ok) { const j = await r.json().catch(() => ({})); $("unptitle").textContent = "Pairing failed"; $("unpmsg").textContent = j.error || "Try a new QR code."; }
+}
+
+/** Finds which extra ports this browser can use (each gives 6 more parallel connections). */
+async function probePorts(ports) {
+  const extra = ports.slice(1).map(p => `${location.protocol}//${location.hostname}:${p}`);
+  const ok = await Promise.all(extra.map(async o => {
+    try {
+      const c = new AbortController(); const t = setTimeout(() => c.abort(), 2500);
+      const r = await fetch(o + "/api/ping", { credentials: "include", signal: c.signal }); clearTimeout(t);
+      return r.ok ? o : null;
+    } catch (_) { return null; }
+  }));
+  origins = [location.origin, ...ok.filter(Boolean)];
+}
+
+function lanes() {
+  const n = debugLanes || origins.length * PER_ORIGIN;
+  return Array.from({ length: n }, (_, i) => origins[i % origins.length]);
+}
+
+/* ---------- state polling + offers ---------- */
+let lastOffers = "", probed = false, polling = false, shownDev = "";
+function renderOffers(list) {
+  $("offers").innerHTML = list.length ? list.map(o => {
+    const k = kindOf(o.name, o.mime || o.type);
+    return `<div class="row">${thumb(k)}<div class="mid">${nameHTML(o.name)}<div class="meta">${fmt(o.size)} · ${KIND_LABEL[k]}</div></div>` +
+      `<a class="save press" href="/dl/${encodeURIComponent(o.id)}" download="${esc(o.name)}" aria-label="Save ${esc(o.name)}"><span>Save</span></a></div>`;
+  }).join("")
+    : `<div class="empty">${FOLDER}<div><b>Nothing shared yet</b><div class="meta" style="white-space:normal">Files picked on the ${esc(devName)} show up here.</div></div></div>`;
+}
+async function refresh() {
+  if (polling) return; polling = true;
+  try {
+    const r = await api("/api/state", {}, location.origin, 4000);
+    if (!r.ok) return;
+    const s = await r.json();
+    curNet = s.network || null;
+    setOnline(true);
+    showApp();
+    if (s.network) netName = s.network;
+    if (s.wifiPass) wifiPass = s.wifiPass;
+    devName = s.device || devName;
+    saveSnap();
+    if (!probed) { probed = true; await probePorts(s.ports || []); $("lanes").textContent = `${lanes().length} parallel connections`; }
+    if (s.device && s.device !== shownDev) {
+      shownDev = s.device; $("dev").textContent = s.device;
+      document.querySelectorAll(".devname").forEach(e => e.textContent = s.device);
+    }
+    const offers = s.offers || [];
+    const key = JSON.stringify(offers) + "|" + devName;
+    if (key !== lastOffers) { lastOffers = key; renderOffers(offers); } // only when changed, so a Save tap is never interrupted
+  } catch (e) { if (e.net) setOnline(false); }
+  finally { polling = false; }
+}
+
+/* ---------- picking (the basket) ---------- */
+let basket = []; // { f: File, k: kind, url: object URL for image thumbs, or "" }
+const src = "files"; // kept for the send record; the page can't tell which picker iOS used
+/*
+ * iOS always shows its own menu (Photo Library / Take Photo / Choose File) for a file picker that
+ * accepts photos and videos, so the page can't choose for the user. One button, one clear tip:
+ * Photo Library converts (HEVC -> H.264, HEIC -> JPEG); Choose File (the Files app) sends originals.
+ */
+if (IOS) {
+  $("hint").innerHTML = "For original quality, tap <b>Choose File</b> in the menu. Photo Library sends converted copies.";
+  $("hint").hidden = false;
+}
+for (const id of ["choose", "addmore"]) $(id).onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("pick").click(); } };
+$("pick").onchange = () => {
+  for (const f of Array.from($("pick").files)) {
+    const k = kindOf(f.name, f.type);
+    basket.push({ f, k, url: k === "image" && f.size < 40e6 ? URL.createObjectURL(f) : "" });
+  }
+  $("pick").value = ""; // lets the same file be picked again
+  renderBasket();
+};
+function renderBasket() {
+  $("basket").innerHTML = basket.map((b, i) => {
+    const e = ext(b.f.name);
+    return `<div class="row">${thumb(b.k, b.url)}<div class="mid">${nameHTML(b.f.name)}<div class="meta">${fmt(b.f.size)}${e ? " · " + esc(e.toUpperCase()) : ""}</div></div>` +
+      `<button class="x press" type="button" data-i="${i}" aria-label="Remove ${esc(b.f.name)}">${XICON}</button></div>`;
+  }).join("");
+  $("choose").hidden = basket.length > 0; $("addmore").hidden = !basket.length;
+  updateBar();
+}
+$("basket").onclick = (e) => {
+  const b = e.target.closest("button[data-i]"); if (!b) return;
+  const [it] = basket.splice(+b.dataset.i, 1); if (it && it.url) URL.revokeObjectURL(it.url);
+  renderBasket();
+};
+function clearBasket() { basket.forEach(b => b.url && URL.revokeObjectURL(b.url)); basket = []; renderBasket(); }
+
+/* ---------- page mode + bottom bar ---------- */
+let mode = "pick"; // pick | sending | done
+function setMode(m) {
+  mode = m;
+  $("sendsec").hidden = m !== "pick";
+  $("xfer").hidden = m === "pick";
+  $("hero").hidden = m !== "sending";
+  $("done").hidden = m !== "done";
+  $("keepopen").hidden = m !== "sending";
+  if (m !== "done") $("sendlist").hidden = m === "pick";
+  updateBar();
+}
+function updateBar() {
+  const show = mode === "sending" || (mode === "pick" && basket.length > 0);
+  $("bar").classList.toggle("off", !show);
+  document.body.classList.toggle("hasbar", show && !unpaired); // body padding so the bar never covers content
+  $("idle").hidden = mode === "sending"; $("busy").hidden = mode !== "sending";
+  if (mode === "pick" && basket.length) {
+    const n = basket.length;
+    $("sum").textContent = `${plural(n, "file")} · ${fmt(basket.reduce((a, b) => a + b.f.size, 0))}`;
+    $("send").textContent = `Send ${plural(n, "file")}`;
+  }
+}
+
+/* ---------- screen wake lock while sending ---------- */
+let wake = null, cur = null; // cur: the transfer in progress (or the last one)
+async function wakeOn() {
+  try {
+    if (navigator.wakeLock && !wake && document.visibilityState === "visible") {
+      wake = await navigator.wakeLock.request("screen");
+      wake.addEventListener("release", () => { wake = null; });
+    }
+  } catch (_) { wake = null; }
+}
+function wakeOff() { try { if (wake) wake.release(); } catch (_) {} wake = null; }
+/* Held the whole time this page is paired and open: an iPhone that auto-locks re-checks its Wi-Fi and
+   jumps back to a saved network that has internet, which drops it off the Android's own Wi-Fi. */
+const paired = () => !unpaired && !$("app").hidden;
+document.addEventListener("visibilitychange", () => { if (!document.hidden && paired()) wakeOn(); }); // iOS drops the lock when hidden
+document.addEventListener("pointerdown", () => { if (paired() && !wake) wakeOn(); }, { passive: true }); // some browsers only grant it after a tap
+
+/* ---------- sending ---------- */
+const eta = (s) => { s = Math.max(1, Math.ceil(s)); return s < 60 ? `${s} s` : s < 3600 ? `${Math.floor(s / 60)} min ${s % 60} s` : `${Math.floor(s / 3600)} h ${Math.floor(s / 60) % 60} min`; };
+
+/**
+ * Sends all picked files at once: every file is cut into 16 MB pieces, and all connections
+ * pull the next piece from one shared queue. The Android writes each piece straight into
+ * its place in the final file, so there is no joining step at the end.
+ */
+async function send(items) {
+  if (!items.length || (cur && !cur.finished)) return;
+  const X = cur = { cancelled: false, finished: false, paused: false, ac: new AbortController(), src, sentAll: 0, iv: 0 };
+  const files = items.map((b, i) => ({ b, f: b.f, i, id: null, sent: 0, done: false, failed: null, el: null }));
+  X.files = files;
+  $("sendlist").innerHTML = files.map(x =>
+    `<div class="row">${thumb(x.b.k, x.b.url)}<div class="mid"><div class="nmrow">${nameHTML(x.f.name)}<span class="pct"></span></div>` +
+    `<div class="l2"><div class="pb" hidden><i></i></div><div class="meta"></div></div></div><span class="st"></span></div>`).join("");
+  files.forEach((x, i) => x.el = $("sendlist").children[i]);
+  $("spd").textContent = "0.0"; $("sline").textContent = "Starting…"; $("tbar").style.transform = "scaleX(0)";
+  setMode("sending");
+  window.scrollTo(0, 0);
+  wakeOn();
+
+  const draw = (x) => { // rows keep a fixed height while sending; only a failure adds lines
+    const e = x.el, l2 = e.querySelector(".l2"), bar = e.querySelector(".pb"), meta = e.querySelector(".meta"), pct = e.querySelector(".pct"), st = e.querySelector(".st");
+    if (x.failed) { bar.hidden = true; pct.textContent = ""; st.innerHTML = ""; l2.classList.add("err"); meta.hidden = false; meta.textContent = "Failed: " + x.failed; return; }
+    if (x.done) { bar.hidden = true; pct.textContent = ""; meta.hidden = false; meta.textContent = fmt(x.f.size); st.innerHTML = CHECK(22, "#3DDC97", 2.2).replace('aria-hidden="true"', 'role="img" aria-label="Sent"'); return; }
+    if (x.sent > 0) {
+      const p = x.sent / x.f.size;
+      meta.hidden = true; bar.hidden = false; bar.firstChild.style.transform = `scaleX(${p})`; pct.textContent = Math.floor(p * 100) + "%";
+    } else { bar.hidden = true; meta.hidden = false; meta.textContent = `${fmt(x.f.size)} · waiting`; }
+  };
+  files.forEach(draw);
+
+  const t0 = performance.now();
+  const total = files.reduce((a, x) => a + x.f.size, 0);
+  // Speed = bytes over the last ~3 s; the window stretches (up to 10 s) when pieces finish rarely, so slow links don't jump between 0 and spikes.
+  const samples = [];
+  const tick = () => {
+    if (X !== cur || X.finished) return;
+    const now = performance.now();
+    samples.push([now, X.sentAll]);
+    while (samples.length > 2 && now - samples[1][0] >= 3000 && (X.sentAll - samples[1][1] >= 4 * CHUNK || now - samples[1][0] > 10000)) samples.shift();
+    const [ta, ba] = samples[0], el = (now - t0) / 1000;
+    const sp = now - ta >= 1000 ? (X.sentAll - ba) / ((now - ta) / 1000) : el > 0 ? X.sentAll / el : 0;
+    $("spd").textContent = (sp / 1e6).toFixed(1);
+    const n = files.length, fin = files.filter(x => x.done || x.failed).length, left = total - X.sentAll;
+    $("sline").textContent = X.paused && !online ? `${fmt(left)} left · paused, resumes on its own` :
+      `${Math.min(n, fin + 1)} of ${plural(n, "file")} · ${fmt(left)} left · ${sp > 0 ? eta(left / sp) : "starting…"}`;
+    $("tbar").style.transform = `scaleX(${total ? X.sentAll / total : 1})`;
+  };
+  onNet = tick;
+  X.iv = setInterval(tick, 250); // at most 4 updates a second
+
+  const jobs = [];
+  for (const x of files) {
+    if (X.cancelled) break;
+    try {
+      const r = await api("/api/upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: x.f.name, size: x.f.size }), signal: X.ac.signal });
+      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || "error " + r.status);
+      x.id = (await r.json()).id;
+      if (x.f.size === 0) x.done = true;
+      for (let off = 0; off < x.f.size; off += CHUNK) jobs.push({ x, off, end: Math.min(off + CHUNK, x.f.size) });
+    } catch (e) { if (X.cancelled) break; x.failed = e.message; }
+    draw(x);
+  }
+
+  let next = 0;
+  async function worker(origin) {
+    while (next < jobs.length && !X.cancelled) {
+      const j = jobs[next++];
+      if (j.x.failed) continue;
+      for (let attempt = 1; !X.cancelled; attempt++) {
+        try {
+          const o = attempt === 1 ? origin : location.origin; // retry on the main port
+          const res = await api(`/api/upload/${j.x.id}?offset=${j.off}`, { method: "PUT", body: j.x.f.slice(j.off, j.end), signal: X.ac.signal }, o, 120000);
+          const r = await res.json().catch(() => ({}));
+          if (res.status === 404) throw Object.assign(new Error("sharing was restarted on the Android; send this file again"), { fatal: true });
+          if (!res.ok) throw new Error(r.error || res.status);
+          setOnline(true);
+          j.x.sent += j.end - j.off; X.sentAll += j.end - j.off;
+          if (r.done) j.x.done = true;
+          break;
+        } catch (e) {
+          if (X.cancelled || e.cancel) break;
+          if (e.message === "not paired" || e.fatal || j.x.failed) { j.x.failed = j.x.failed || e.message; break; }
+          if (e.net) {
+            // No answer: pause this lane until the Android is back (the status pill explains), then resend the same piece.
+            X.paused = true; tick();
+            try { await waitOnline(180000, X); } catch (w) { if (!w.cancel) j.x.failed = w.message; break; }
+            X.paused = false; attempt = 0; continue;
+          }
+          if (attempt >= 20) { j.x.failed = String(e.message || e); break; }
+          await sleep(Math.min(500 * attempt, 4000));
+        }
+      }
+      if (!X.cancelled) draw(j.x);
+    }
+  }
+  await Promise.all(lanes().map(worker));
+  if (X.cancelled) return; // Cancel already put the page back
+  X.finished = true; clearInterval(X.iv); if (onNet === tick) onNet = null; // the screen stays awake: it is held while paired, not just while sending
+  files.forEach(draw);
+  showDone(X, performance.now() - t0);
+}
+
+function showDone(X, ms) {
+  const files = X.files, n = files.length, ok = files.every(x => x.done), nOk = files.filter(x => x.done).length;
+  setMode("done");
+  $("badge").className = "badge" + (ok ? "" : " bad");
+  $("badgeico").innerHTML = ok ? CHECK(32, "#0A0B10", 2.6) : svg('<path d="M12 6.5v7M12 17.5v.01"/>', 32, 'fill="none" stroke="#0A0B10" stroke-width="2.8" stroke-linecap="round"');
+  $("dtitle").textContent = ok ? `Sent to ${devName}` : "Some files didn't send";
+  $("dsub").textContent = (ok ? plural(n, "file") : `${nOk} of ${n} sent`) + ` · ${fmt(X.sentAll)} in ${(ms / 1000).toFixed(1)} s`;
+  $("chips").innerHTML = (X.sentAll ? `<span class="chip">avg ${rate(X.sentAll, ms)}</span>` : "") +
+    "";
+  $("sendlist").hidden = ok; // on failure the list shows each file's error
+  $("retry").hidden = ok;
+  $("again").classList.toggle("cap2", !ok);
+}
+$("send").onclick = () => send(basket.slice());
+$("retry").onclick = () => { if (cur && cur.finished) send(cur.files.filter(x => !x.done).map(x => x.b)); };
+$("again").onclick = () => { clearBasket(); $("sendlist").innerHTML = ""; setMode("pick"); };
+$("cancel").onclick = () => { // stop sending: abort every in-flight piece; workers see the flag and stop
+  const X = cur; if (!X || X.finished) return;
+  X.cancelled = true; X.finished = true; X.ac.abort(); clearInterval(X.iv); onNet = null;
+  setMode("pick");
+  toast("Sending stopped. Your files are still in the list.", 4000);
+};
+
+/* ---------- speed test ---------- */
+/** Measures the link in both directions, from memory (no files involved). */
+async function speedTest() {
+  if (testing) return; testing = true; $("speed").disabled = true;
+  const L = lanes(), mb = 64;
+  try {
+    const block = new Uint8Array(8 << 20);
+    for (let i = 0; i < block.length; i += 65536) crypto.getRandomValues(block.subarray(i, i + 65536));
+    const body = new Blob(Array(mb / 8).fill(block));
+    toast("Speed test · testing upload…");
+    let t = performance.now();
+    await Promise.all(L.map(o => api("/api/speed", { method: "POST", body }, o).then(r => r.json())));
+    const up = rate(L.length * mb * 1048576, performance.now() - t);
+    toast(`Upload ${up} · testing download…`);
+    t = performance.now();
+    await Promise.all(L.map(async o => { const rd = (await api(`/api/speed?mb=${mb}`, {}, o)).body.getReader(); while (!(await rd.read()).done) {} }));
+    const down = rate(L.length * mb * 1048576, performance.now() - t);
+    toast(`Upload ${up} · Download ${down} · testing single download…`);
+    t = performance.now();
+    { const rd = (await api(`/api/speed?mb=256`)).body.getReader(); while (!(await rd.read()).done) {} }
+    const single = rate(256 * 1048576, performance.now() - t);
+    testing = false;
+    toast(`<b>Upload ${up} · Download ${down}</b><br><span class="m">${L.length} connections on ${origins.length} port(s) · one connection download ${single}</span>`, 10000);
+  } catch (e) { testing = false; toast("Speed test failed: " + esc(e.message), 6000); }
+  $("speed").disabled = false;
+}
+$("speed").onclick = () => { openMenu(false); speedTest(); };
+
+$("logout").onclick = async () => {
+  openMenu(false);
+  if (!confirm("Unpair this browser? To use LanBeam again, scan a new QR code from the Android.")) return;
+  await api("/api/logout", { method: "POST" }).catch(() => {});
+  showUnpaired();
+};
+
+/* ---------- offline copy + remembered state ---------- */
+// What the page last knew, so a reload while disconnected still shows who and how to reconnect.
+const SNAP = "lanbeam.snap";
+function saveSnap() {
+  // The hotspot password is kept only for this tab (sessionStorage): it survives a reload, not closing the tab.
+  try { localStorage.setItem(SNAP, JSON.stringify({ devName, netName, curNet, t: Date.now() })); } catch (_) {}
+  try { if (wifiPass) sessionStorage.setItem(SNAP + ".pass", wifiPass); } catch (_) {}
+}
+function loadSnap() {
+  try { const s = JSON.parse(localStorage.getItem(SNAP) || "null"); return s && Date.now() - s.t < 12 * 3600e3 ? s : null; } catch (_) { return null; }
+}
+/** Opened (or reloaded) without reaching the Android: show the last known state and how to reconnect. */
+function startOffline() {
+  const s = loadSnap(); if (!s) return;
+  devName = s.devName || devName; netName = s.netName || ""; curNet = s.curNet || null;
+  try { wifiPass = sessionStorage.getItem(SNAP + ".pass") || ""; } catch (_) { wifiPass = ""; }
+  $("dev").textContent = devName; document.querySelectorAll(".devname").forEach(e => e.textContent = devName);
+  everOk = true; showApp();
+  graceUntil = 0; fails = 99; lastOk = 0; setOnline(false); openPillCard(true);
+}
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {}); // may be refused with a self-signed certificate
+
+setMode("pick"); renderBasket();
+(async () => {
+  try { await pairFromHash(); } catch (_) {} // no answer: the polling below shows the status pill
+  await refresh();
+  if (!everOk && $("app").hidden && $("unpaired").hidden) startOffline();
+  setInterval(refresh, 2000);
+})();
+</script>
+</body>
+</html>

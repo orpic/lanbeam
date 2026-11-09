@@ -1,0 +1,50 @@
+# --- Build output
+.gradle/
+build/
+*.apk
+*.aab
+*.ap_
+output-metadata.json
+android/app/release/
+android/app/debug/
+captures/
+
+# --- Local machine settings (sdk.dir reveals the local user name)
+local.properties
+
+# --- Signing keys and their passwords: never in the repo.
+# The release key lives outside the project; passwords come from ~/.gradle/gradle.properties.
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+keystore.properties
+signing.properties
+
+# --- Secrets and environment files
+.env
+.env.*
+google-services.json
+*.service-account.json
+
+# --- AI coding assistant files (Claude Code saves approved commands, which can contain secrets,
+# in .claude/settings.local.json; transcripts and memory files can hold personal details)
+.claude/
+CLAUDE.local.md
+CLAUDE.md
+.mcp.json
+.cursor/
+.gemini/
+.specstory/
+*.jsonl
+
+# --- Logs and test leftovers
+*.log
+*.hprof
+
+# --- Editors and OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
